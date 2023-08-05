@@ -1,0 +1,14 @@
+###############
+#Web配置文件
+###############
+
+server:
+  port: 8080
+
+# 静态文件目录
+static:
+  base:
+    dir: static
+
+# 模式：web只作为web服务器，backend：最作为后端服务器，mixed：混合模式，web服务器和后端共存
+mode: backend

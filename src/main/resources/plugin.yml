@@ -1,0 +1,4 @@
+name: BukkitWebFramework
+version: '${project.version}'
+main: cn.mrcsh.bukkitwebframework.Main
+api-version: '1.20'
