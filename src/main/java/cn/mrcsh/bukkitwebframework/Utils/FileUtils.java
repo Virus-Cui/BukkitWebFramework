@@ -12,7 +12,7 @@ public class FileUtils {
         InputStream in = null;
         try {
             File file = new File(filePath);
-            LogUtils.info("&a %s"+filePath);
+            LogUtils.info("&a %s",filePath);
             if (!file.exists()) {
                 return false;
             }

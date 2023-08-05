@@ -19,4 +19,13 @@ public enum HTTPType {
     public String getDesc() {
         return desc;
     }
+
+    public static HTTPType findType(String type){
+        for (HTTPType value : HTTPType.values()) {
+            if(value.getMethod().equalsIgnoreCase(type)){
+                return value;
+            }
+        }
+        return HTTPType.GET;
+    }
 }

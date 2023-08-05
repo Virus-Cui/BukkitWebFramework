@@ -32,7 +32,7 @@ public class ConfigUtils {
         } catch (IOException | InvalidConfigurationException e) {
             LogUtils.error("加载配置文件发生错误", e);
         }
-        LogUtils.info("&a加载%s成功", configName);
+        LogUtils.info("&6加载%s成功", configName);
         return configuration;
     }
 }

@@ -49,8 +49,12 @@ public class Main {
         initWebFolder();
         YamlConfiguration configuration = ConfigUtils.loadConfig("web/config.yml");
         WebConfig.serverPort = configuration.getInt("server.port");
+        LogUtils.info("&6服务端口:" + WebConfig.serverPort);
+        WebConfig.mode = configuration.getString("mode");
+        LogUtils.info("&6服务模式:" + WebConfig.mode);
         WebConfig.staticBaseDir = ConfigUtils.javaPlugin.getDataFolder().getAbsolutePath()+File.separator+"web"+ File.separator+configuration.getString("static.base.dir").replaceFirst("/","");
-        LogUtils.info("&6静态文件主目录" + WebConfig.staticBaseDir);
+        LogUtils.info("&6静态文件主目录:" + WebConfig.staticBaseDir);
+
     }
 
     private static void mappingRequestUrl(Class<? extends JavaPlugin> clazz, JavaPlugin plugin)  throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException{
@@ -84,6 +88,20 @@ public class Main {
                         requestMethodMapping.setType(HTTPType.POST);
                         requestMethodMapping.setName(annotation.value());
                         requestMethodMapping.setObj(ControllerClazz.getDeclaredConstructor().newInstance());
+                        Parameter[] parameters = method.getParameters();
+                        if(parameters.length > 0){
+                            LinkedHashMap<String ,String> linkedHashMap = new LinkedHashMap<>();
+                            for (Parameter parameter : parameters) {
+                                RequestParam queryParameter = parameter.getAnnotation(RequestParam.class);
+                                RequestBody body = parameter.getAnnotation(RequestBody.class);
+                                if(body != null){
+                                    linkedHashMap.put("body",parameter.getName());
+                                }else {
+                                    linkedHashMap.put(queryParameter.value(),parameter.getName());
+                                }
+                            }
+                            requestMethodMapping.setLinkedHashMap(linkedHashMap);
+                        }
                         WebConfig.mappingHashMap.get("POST").put(annotation.value(), requestMethodMapping);
                     }else if(method.getAnnotation(RequestMapping.class) != null){
                         RequestMapping annotation = method.getAnnotation(RequestMapping.class);
