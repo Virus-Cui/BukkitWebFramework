@@ -1,12 +1,14 @@
 package cn.mrcsh.bukkitwebframework.Container;
 
-import cn.mrcsh.bukkitwebframework.Config.WebConfig;
-import cn.mrcsh.bukkitwebframework.Servlet.DispatcherServlet;
-import cn.mrcsh.bukkitwebframework.Utils.LogUtils;
+import cn.mrcsh.bukkitwebframework.Bungee.Config.WebConfig;
+import cn.mrcsh.bukkitwebframework.Bungee.Servlet.DispatcherServlet;
+import cn.mrcsh.bukkitwebframework.Bungee.Utils.LogUtils;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
+
+import javax.servlet.http.HttpServlet;
 
 public class WebContainer {
     private static Tomcat webServer;
@@ -16,7 +18,7 @@ public class WebContainer {
         return webServer;
     }
 
-    public static void initWebServer(Integer port){
+    public static void initWebServer(HttpServlet dispatcherServlet, String baseDir){
         new Thread(()->{
             LogUtils.info("&6开始初始化Tomcat Web服务器");
             Tomcat tomcat = new Tomcat();
@@ -28,10 +30,11 @@ public class WebContainer {
             tomcat.getService().addConnector(con);
             //注册servlet
             Context ctx = tomcat.addContext("", null);
-            Tomcat.addServlet(ctx, "dispatcherServlet", new DispatcherServlet());
+            Tomcat.addServlet(ctx, "dispatcherServlet", dispatcherServlet);
             //映射servlet
             ctx.addServletMappingDecoded("/", "dispatcherServlet");
             //启动tomcat
+            tomcat.setBaseDir(baseDir);
             try {
                 tomcat.start();
             } catch (LifecycleException e) {

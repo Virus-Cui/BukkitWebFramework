@@ -6,7 +6,7 @@
 
     <groupId>cn.mrcsh</groupId>
     <artifactId>BukkitWebFramework</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>2.0-RELEASE</version>
     <packaging>jar</packaging>
 
     <name>BukkitWebFramework</name>
@@ -43,6 +43,22 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <attach>true</attach>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <resources>
             <resource>
@@ -60,6 +76,10 @@
         <repository>
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>papermc-repo</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
     </repositories>
 
@@ -90,5 +110,29 @@
         </dependency>
 
 
+
+        <dependency>
+            <groupId>io.github.waterfallmc</groupId>
+            <artifactId>waterfall-api</artifactId>
+            <version>1.20-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
+
+
     </dependencies>
+
+
+    <distributionManagement>
+        <!--稳定版本的仓库地址,必须是允许上传的私服地址-->
+        <repository>
+            <id>releases</id>
+            <url>http://dev.mrcsh.cn:8081/repository/virus-cui-release/</url>
+        </repository>
+    </distributionManagement>
 </project>
