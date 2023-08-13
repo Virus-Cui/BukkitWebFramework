@@ -1,4 +1,4 @@
-package cn.mrcsh.bukkitwebframework.Bungee.Utils;
+package cn.mrcsh.bukkitwebframework.Servlet;
 
 
 import org.jetbrains.annotations.NotNull;

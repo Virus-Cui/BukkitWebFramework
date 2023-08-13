@@ -1,4 +1,4 @@
-package cn.mrcsh.bukkitwebframework.Bukkit.Utils;
+package cn.mrcsh.bukkitwebframework.Utils;
 
 import javax.servlet.ServletResponse;
 import java.io.File;
@@ -12,7 +12,6 @@ public class FileUtils {
         InputStream in = null;
         try {
             File file = new File(filePath);
-            LogUtils.info("&a %s",filePath);
             if (!file.exists()) {
                 return false;
             }

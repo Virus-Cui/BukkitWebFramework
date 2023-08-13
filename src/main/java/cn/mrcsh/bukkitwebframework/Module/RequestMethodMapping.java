@@ -1,6 +1,6 @@
-package cn.mrcsh.bukkitwebframework.Bukkit.Module;
+package cn.mrcsh.bukkitwebframework.Module;
 
-import cn.mrcsh.bukkitwebframework.Bukkit.Enum.HTTPType;
+import cn.mrcsh.bukkitwebframework.Enum.HTTPType;
 
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;

@@ -1,7 +1,6 @@
-package cn.mrcsh.bukkitwebframework.Bungee.Config;
+package cn.mrcsh.bukkitwebframework.Config;
 
-import cn.mrcsh.bukkitwebframework.Bungee.Module.RequestMethodMapping;
-import net.md_5.bungee.api.plugin.Plugin;
+import cn.mrcsh.bukkitwebframework.Module.RequestMethodMapping;
 
 import java.util.LinkedHashMap;
 
@@ -36,9 +35,7 @@ public class WebConfig {
         mappingHashMap.put("POST",new LinkedHashMap<String, RequestMethodMapping>());
     }
 
-    public static Integer serverPort = 8080;
+    public static Integer serverPort = 0;
     public static String staticBaseDir = "";
     public static String mode = "";
-
-    public static Plugin plugin;
 }

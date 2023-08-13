@@ -1,4 +1,4 @@
-package cn.mrcsh.bukkitwebframework.Bungee.Enum;
+package cn.mrcsh.bukkitwebframework.Enum;
 
 public enum HTTPType {
     GET("GET","GET请求"),

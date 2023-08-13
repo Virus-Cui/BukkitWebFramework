@@ -1,4 +1,4 @@
-package cn.mrcsh.bukkitwebframework.Bungee.Utils;
+package cn.mrcsh.bukkitwebframework.Servlet;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -21,7 +21,6 @@ public final class ClassUtil {
     /**
      * Gets all the classes in a provided package.
      *
-     * @param plugin      The plugin who owns the package
      * @param packageName The package to scan classes in.
      * @return The classes in the package packageName.
      */

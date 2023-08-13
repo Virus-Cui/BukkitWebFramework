@@ -1,4 +1,4 @@
-package cn.mrcsh.bukkitwebframework.Bungee.Annotation;
+package cn.mrcsh.bukkitwebframework.Annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

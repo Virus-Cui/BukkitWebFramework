@@ -1,27 +1,28 @@
 package cn.mrcsh.bukkitwebframework.Bungee.Utils;
 
 
-import cn.mrcsh.bukkitwebframework.Bungee.Config.WebConfig;
-import org.bukkit.Bukkit;
+import net.md_5.bungee.api.plugin.Plugin;
 
 public class LogUtils {
     public static boolean noLog = false;
 
+    public static Plugin plugin;
+
     public static void info(String msg) {
         if (!noLog) {
-            WebConfig.plugin.getProxy().getConsole().sendMessage("§c[§eBukkitWeb§c]§f:" + msg.replaceAll("&", "§"));
+            plugin.getProxy().getConsole().sendMessage("§c[§eBungeeWeb§c]§f:" + msg.replaceAll("&", "§"));
         }
     }
 
     public static void info(String msg, Object... objs) {
         if (!noLog) {
-            WebConfig.plugin.getProxy().getConsole().sendMessage("§c[§eBukkitWeb§c]§f:" + String.format(msg.replaceAll("&", "§"), objs));
+            plugin.getProxy().getConsole().sendMessage("§c[§eBungeeWeb§c]§f:" + String.format(msg.replaceAll("&", "§"), objs));
         }
     }
 
     public static void error(String msg, Exception e) {
         if (!noLog) {
-            WebConfig.plugin.getProxy().getConsole().sendMessage("§c[§eBukkitWeb§c]§f:" + "§c" + msg + e.getMessage());
+            plugin.getProxy().getConsole().sendMessage("§c[§eBungeeWeb§c]§f:" + "§c" + msg + e.getMessage());
         }
     }
 

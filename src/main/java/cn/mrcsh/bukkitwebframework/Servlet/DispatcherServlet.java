@@ -1,12 +1,12 @@
-package cn.mrcsh.bukkitwebframework.Bukkit.Servlet;
+package cn.mrcsh.bukkitwebframework.Servlet;
 
 
-import cn.mrcsh.bukkitwebframework.Bukkit.Annotation.CrossOrigin;
-import cn.mrcsh.bukkitwebframework.Bukkit.Config.WebConfig;
-import cn.mrcsh.bukkitwebframework.Bukkit.Enum.HTTPType;
-import cn.mrcsh.bukkitwebframework.Bukkit.Enum.Mode;
-import cn.mrcsh.bukkitwebframework.Bukkit.Module.RequestMethodMapping;
-import cn.mrcsh.bukkitwebframework.Bukkit.Utils.FileUtils;
+import cn.mrcsh.bukkitwebframework.Annotation.CrossOrigin;
+import cn.mrcsh.bukkitwebframework.Enum.HTTPType;
+import cn.mrcsh.bukkitwebframework.Enum.Mode;
+import cn.mrcsh.bukkitwebframework.Module.RequestMethodMapping;
+import cn.mrcsh.bukkitwebframework.Config.WebConfig;
+import cn.mrcsh.bukkitwebframework.Utils.FileUtils;
 import com.alibaba.fastjson.JSON;
 
 import javax.servlet.http.HttpServlet;

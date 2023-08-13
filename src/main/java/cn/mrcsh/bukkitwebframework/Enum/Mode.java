@@ -1,4 +1,4 @@
-package cn.mrcsh.bukkitwebframework.Bukkit.Enum;
+package cn.mrcsh.bukkitwebframework.Enum;
 
 public enum Mode {
     WEB("web","单网页模式"),

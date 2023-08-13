@@ -1,12 +1,12 @@
 package cn.mrcsh.bukkitwebframework.Bungee;
 
-import cn.mrcsh.bukkitwebframework.Bungee.Annotation.*;
-import cn.mrcsh.bukkitwebframework.Bungee.Config.WebConfig;
+import cn.mrcsh.bukkitwebframework.Annotation.*;
+import cn.mrcsh.bukkitwebframework.Config.WebConfig;
 import cn.mrcsh.bukkitwebframework.Container.WebContainer;
-import cn.mrcsh.bukkitwebframework.Bungee.Enum.HTTPType;
-import cn.mrcsh.bukkitwebframework.Bungee.Module.RequestMethodMapping;
-import cn.mrcsh.bukkitwebframework.Bungee.Servlet.DispatcherServlet;
-import cn.mrcsh.bukkitwebframework.Bungee.Utils.ClassUtil;
+import cn.mrcsh.bukkitwebframework.Enum.HTTPType;
+import cn.mrcsh.bukkitwebframework.Module.RequestMethodMapping;
+import cn.mrcsh.bukkitwebframework.Servlet.ClassUtil;
+import cn.mrcsh.bukkitwebframework.Servlet.DispatcherServlet;
 import cn.mrcsh.bukkitwebframework.Bungee.Utils.ConfigYmlUtil;
 import cn.mrcsh.bukkitwebframework.Bungee.Utils.LogUtils;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -24,15 +24,15 @@ import java.util.LinkedHashMap;
 public class BungeeWeb {
 
     public static void initialization(Class<? extends Plugin> clazz, Plugin plugin, boolean nolog) {
-        WebConfig.plugin = plugin;
         LogUtils.noLog = nolog;
+        LogUtils.plugin = plugin;
         LogUtils.info("&6 ______     __  __     __  __     __  __     __     ______   __     __     ______     ______    ");
         LogUtils.info("&6/\\  == \\   /\\ \\/\\ \\   /\\ \\/ /    /\\ \\/ /    /\\ \\   /\\__  _\\ /\\ \\  _ \\ \\   /\\  ___\\   /\\  == \\   ");
         LogUtils.info("&6\\ \\  __<   \\ \\ \\_\\ \\  \\ \\  _\"-.  \\ \\  _\"-.  \\ \\ \\  \\/_/\\ \\/ \\ \\ \\/ \".\\ \\  \\ \\  __\\   \\ \\  __<   ");
         LogUtils.info("&6 \\ \\_____\\  \\ \\_____\\  \\ \\_\\ \\_\\  \\ \\_\\ \\_\\  \\ \\_\\    \\ \\_\\  \\ \\__/\".~\\_\\  \\ \\_____\\  \\ \\_____\\");
         LogUtils.info("&6  \\/_____/   \\/_____/   \\/_/\\/_/   \\/_/\\/_/   \\/_/     \\/_/   \\/_/   \\/_/   \\/_____/   \\/_____/");
         // 加载配置文件
-        loadConfig();
+        loadConfig(plugin);
         // 映射请求路径
         try {
             mappingRequestUrl(clazz, plugin);
@@ -47,18 +47,18 @@ public class BungeeWeb {
         }, "Web Thread").start();
     }
 
-    private static void initWebFolder() {
-        ConfigYmlUtil.saveResource("config.yml");
+    private static void initWebFolder(Plugin plugin) {
+        ConfigYmlUtil.saveResource(plugin,"config.yml");
     }
 
-    private static void loadConfig() {
-        initWebFolder();
-        Configuration configuration = ConfigYmlUtil.getYamlConfiguration("web/config.yml");
+    private static void loadConfig(Plugin plugin) {
+        initWebFolder(plugin);
+        Configuration configuration = ConfigYmlUtil.getYamlConfiguration(plugin,"web/config.yml");
         WebConfig.serverPort = configuration.getInt("server.port");
         LogUtils.info("&6服务端口:" + WebConfig.serverPort);
         WebConfig.mode = configuration.getString("mode");
         LogUtils.info("&6服务模式:" + WebConfig.mode);
-        WebConfig.staticBaseDir = WebConfig.plugin.getDataFolder().getAbsolutePath()+File.separator+"web"+ File.separator+configuration.getString("static.base.dir").replaceFirst("/","");
+        WebConfig.staticBaseDir = plugin.getDataFolder().getAbsolutePath()+File.separator+"web"+ File.separator+configuration.getString("static.base.dir").replaceFirst("/","");
         LogUtils.info("&6静态文件主目录:" + WebConfig.staticBaseDir);
         WebConfig.defaultPage = configuration.getString("default.page");
         LogUtils.info("&6默认文件:" + WebConfig.defaultPage);
