@@ -1,4 +1,4 @@
-package cn.mrcsh.bukkitwebframework.Servlet;
+package cn.mrcsh.bukkitwebframework.Utils;
 
 import com.google.common.collect.ImmutableSet;
 

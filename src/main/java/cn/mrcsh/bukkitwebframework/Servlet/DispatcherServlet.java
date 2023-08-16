@@ -2,12 +2,19 @@ package cn.mrcsh.bukkitwebframework.Servlet;
 
 
 import cn.mrcsh.bukkitwebframework.Annotation.CrossOrigin;
+import cn.mrcsh.bukkitwebframework.Annotation.FormParams;
+import cn.mrcsh.bukkitwebframework.Annotation.MultiPartFile;
+import cn.mrcsh.bukkitwebframework.Config.WebConfig;
 import cn.mrcsh.bukkitwebframework.Enum.HTTPType;
 import cn.mrcsh.bukkitwebframework.Enum.Mode;
+import cn.mrcsh.bukkitwebframework.Module.FormDataModule;
+import cn.mrcsh.bukkitwebframework.Module.MultipartFile;
 import cn.mrcsh.bukkitwebframework.Module.RequestMethodMapping;
-import cn.mrcsh.bukkitwebframework.Config.WebConfig;
 import cn.mrcsh.bukkitwebframework.Utils.FileUtils;
 import com.alibaba.fastjson.JSON;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -17,14 +24,16 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DispatcherServlet extends HttpServlet {
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void service(HttpServletRequest req, HttpServletResponse resp) {
         if (req.getRequestURI().equals("/")) {
-            if(!WebConfig.defaultPage.equals("")){
+            if (!WebConfig.defaultPage.equals("")) {
                 String[] split = WebConfig.defaultPage.split("/");
                 for (String s : split) {
                     if (FileUtils.readFileToHttpServletResponse(resp, new File(WebConfig.staticBaseDir, s).getAbsolutePath())) {
@@ -39,31 +48,39 @@ public class DispatcherServlet extends HttpServlet {
         // 选择的模式
 
         Mode mode = Mode.findMode(WebConfig.mode);
-
-        switch (mode) {
-            case WEB:
-                findByStatic(req, resp);
-                break;
-            case BACKEND:
-                findByMethods(req, resp);
-                break;
-            case MIXED:
-                boolean status = findByMethods(req, resp);
-                if (!status) {
+        try {
+            switch (mode) {
+                case WEB:
                     findByStatic(req, resp);
-                }
-                break;
+                    break;
+                case BACKEND:
+                    findByMethods(req, resp);
+                    break;
+                case MIXED:
+                    boolean status = findByMethods(req, resp);
+                    if (!status) {
+                        findByStatic(req, resp);
+                    }
+                    break;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
+
     }
 
-    public void returnDefaultDocument(HttpServletResponse response) throws IOException {
+    public void returnDefaultDocument(HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html");
-        response.getWriter().write(String.format(WebConfig.defaultCallBackHTML, 404, "Page Is Not Found"));
+        try {
+            response.getWriter().write(String.format(WebConfig.defaultCallBackHTML, 404, "Page Is Not Found"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public boolean findByMethods(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public boolean findByMethods(HttpServletRequest request, HttpServletResponse response) throws Exception {
         // 设置返回字符集
         response.setCharacterEncoding("UTF-8");
         request.setCharacterEncoding("UTF-8");
@@ -85,7 +102,7 @@ public class DispatcherServlet extends HttpServlet {
             // 设置返回Context类型
             response.setContentType("text/plain");
             CrossOrigin annotation = realMap.getMethod().getAnnotation(CrossOrigin.class);
-            if(annotation != null){
+            if (annotation != null) {
 
             }
             // 获取接口类对象
@@ -101,10 +118,10 @@ public class DispatcherServlet extends HttpServlet {
             switch (type) {
                 case GET:
                     if (mappingMethod.getParameters().length > 0) {
-                        LinkedHashMap<String, String> paramMap = realMap.getLinkedHashMap();
+                        LinkedHashMap<String, Parameter> paramMap = realMap.getLinkedHashMap();
                         param = new Object[paramMap.size()];
-                        for (Map.Entry<String, String> entry : paramMap.entrySet()) {
-                            int index = Integer.parseInt(entry.getValue().replaceFirst("arg",""));
+                        for (Map.Entry<String, Parameter> entry : paramMap.entrySet()) {
+                            int index = Integer.parseInt(entry.getValue().getName().replaceFirst("arg", ""));
                             // 映射HttpServletRequest
                             if (entry.getKey().equals("httpServletRequest")) {
                                 param[index] = request;
@@ -125,24 +142,32 @@ public class DispatcherServlet extends HttpServlet {
                     }
                     break;
                 case POST:
+                    // 从Request对象获取Form表单数据
+                    FormDataModule formDataModule = read2Form(request);
                     // 获取Query和Body参数
                     // Query参数
-                    Map<String, String[]> queryParams = request.getParameterMap();
+                    Map<String, String[]> queryParams = null;
+                    queryParams = request.getParameterMap();
                     // body参数
-                    BufferedReader reader = request.getReader();
+                    BufferedReader reader = null;
+                    if (formDataModule == null) {
+                        reader = request.getReader();
+                    }
                     StringBuilder stringBuilder = new StringBuilder();
                     String line;
-                    while ((line = reader.readLine()) != null) {
-                        stringBuilder.append(line);
+                    if(reader != null){
+                        while ((line = reader.readLine()) != null) {
+                            stringBuilder.append(line);
+                        }
                     }
                     String body = stringBuilder.toString();
 
                     // 获取属性映射关系
-                    LinkedHashMap<String, String> realParams = realMap.getLinkedHashMap();
+                    LinkedHashMap<String, Parameter> realParams = realMap.getLinkedHashMap();
                     param = new Object[realParams.size()];
 
-                    for (Map.Entry<String, String> entry : realParams.entrySet()) {
-                        int index = Integer.parseInt(entry.getValue().replaceFirst("arg", ""));
+                    for (Map.Entry<String, Parameter> entry : realParams.entrySet()) {
+                        int index = Integer.parseInt(entry.getValue().getName().replaceFirst("arg", ""));
                         if (entry.getKey().equals("httpServletRequest")) {
                             param[index] = request;
                             continue;
@@ -151,17 +176,27 @@ public class DispatcherServlet extends HttpServlet {
                             param[index] = response;
                             continue;
                         }
-                        if (queryParams.containsKey(entry.getKey())) {
+                        if (queryParams != null && queryParams.containsKey(entry.getKey())) {
                             param[index] = queryParams.get(entry.getKey())[0];
+                        } else if (formDataModule != null && entry.getValue().getAnnotation(FormParams.class) != null) {
+                            FormParams formParam = entry.getValue().getAnnotation(FormParams.class);
+                            param[index] = formDataModule.getSimpleParams().get(formParam.value());
+                        } else if (formDataModule != null && entry.getValue().getAnnotation(MultiPartFile.class) != null) {
+                            MultiPartFile file = entry.getValue().getAnnotation(MultiPartFile.class);
+                            FileItem fileItem = formDataModule.getFileParams().get(file.value());
+                            MultipartFile multipartFile = new MultipartFile();
+                            multipartFile.setFileName(fileItem.getName());
+                            multipartFile.setFileItem(fileItem);
+                            param[index] = multipartFile;
                         } else {
                             param[index] = body;
                         }
                     }
                     try {
                         result = mappingMethod.invoke(o, param);
-                    } catch (IllegalAccessException | InvocationTargetException e) {
+                    } catch (Exception e) {
                         response.getWriter().write(String.format(WebConfig.defaultCallBackHTML, e.getMessage()));
-                        return true;
+                        throw new RuntimeException(e);
                     }
                     break;
             }
@@ -187,5 +222,31 @@ public class DispatcherServlet extends HttpServlet {
         if (!b) {
             returnDefaultDocument(response);
         }
+    }
+
+    public FormDataModule read2Form(HttpServletRequest request) throws Exception {
+        FormDataModule formDataModule = new FormDataModule();
+        DiskFileItemFactory factory = new DiskFileItemFactory();
+        ServletFileUpload upload = new ServletFileUpload(factory);
+        if (!request.getHeader("Content-Type").startsWith("multipart/")) {
+            return null;
+        }
+        List<FileItem> list = upload.parseRequest(request);
+        LinkedHashMap<String, String> simpleParams = new LinkedHashMap<>();
+        for (FileItem item : list) {
+
+            if (item.isFormField()) {
+                //得到的是普通输入项
+                String name = item.getFieldName();  //得到输入项的名称
+                String value = item.getString();
+                simpleParams.put(name, value);
+            } else {
+                String filename = item.getFieldName();
+                filename = filename.substring(filename.lastIndexOf("\\") + 1);
+                formDataModule.fileParams.put(filename, item);
+            }
+        }
+        formDataModule.setSimpleParams(simpleParams);
+        return formDataModule;
     }
 }

@@ -3,6 +3,7 @@ package cn.mrcsh.bukkitwebframework.Module;
 import cn.mrcsh.bukkitwebframework.Enum.HTTPType;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.LinkedHashMap;
 
 public class RequestMethodMapping {
@@ -11,7 +12,7 @@ public class RequestMethodMapping {
     private String name;
     private Object obj;
     // key: 变量名 value: 反射获取的变量名
-    private LinkedHashMap<String, String> linkedHashMap = new LinkedHashMap<>();
+    private LinkedHashMap<String, Parameter> linkedHashMap = new LinkedHashMap<>();
 
     public RequestMethodMapping() {
     }
@@ -58,11 +59,11 @@ public class RequestMethodMapping {
         return this;
     }
 
-    public LinkedHashMap<String, String> getLinkedHashMap() {
+    public LinkedHashMap<String, Parameter> getLinkedHashMap() {
         return linkedHashMap;
     }
 
-    public RequestMethodMapping setLinkedHashMap(LinkedHashMap<String, String> linkedHashMap) {
+    public RequestMethodMapping setLinkedHashMap(LinkedHashMap<String, Parameter> linkedHashMap) {
         this.linkedHashMap = linkedHashMap;
         return this;
     }

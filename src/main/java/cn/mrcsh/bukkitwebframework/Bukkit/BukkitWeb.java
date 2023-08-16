@@ -1,7 +1,7 @@
 package cn.mrcsh.bukkitwebframework.Bukkit;
 
 import cn.mrcsh.bukkitwebframework.Annotation.*;
-import cn.mrcsh.bukkitwebframework.Servlet.ClassUtil;
+import cn.mrcsh.bukkitwebframework.Utils.ClassUtil;
 import cn.mrcsh.bukkitwebframework.Bukkit.Utils.ConfigUtils;
 import cn.mrcsh.bukkitwebframework.Bukkit.Utils.LogUtils;
 import cn.mrcsh.bukkitwebframework.Config.WebConfig;
@@ -82,18 +82,18 @@ public class BukkitWeb {
                         requestMethodMapping.setName(annotation.value());
                         requestMethodMapping.setObj(ControllerClazz.getDeclaredConstructor().newInstance());
                         if(parameters.length > 0){
-                            LinkedHashMap<String, String> linkedHashMap = new LinkedHashMap<>();
+                            LinkedHashMap<String, Parameter> linkedHashMap = new LinkedHashMap<>();
                             for (Parameter parameter : parameters) {
                                 if(parameter.getType() == HttpServletRequest.class){
-                                    linkedHashMap.put("httpServletRequest", parameter.getName());
+                                    linkedHashMap.put("httpServletRequest", parameter);
                                     continue;
                                 }
                                 if(parameter.getType() == HttpServletResponse.class){
-                                    linkedHashMap.put("httpServletResponse", parameter.getName());
+                                    linkedHashMap.put("httpServletResponse", parameter);
                                     continue;
                                 }
                                 RequestParam param = parameter.getAnnotation(RequestParam.class);
-                                linkedHashMap.put(param.value(), parameter.getName());
+                                linkedHashMap.put(param.value(), parameter);
                             }
                             requestMethodMapping.setLinkedHashMap(linkedHashMap);
                         }
@@ -107,22 +107,28 @@ public class BukkitWeb {
                         requestMethodMapping.setObj(ControllerClazz.getDeclaredConstructor().newInstance());
                         Parameter[] parameters = method.getParameters();
                         if(parameters.length > 0){
-                            LinkedHashMap<String ,String> linkedHashMap = new LinkedHashMap<>();
+                            LinkedHashMap<String ,Parameter> linkedHashMap = new LinkedHashMap<>();
                             for (Parameter parameter : parameters) {
                                 if(parameter.getType() == HttpServletRequest.class){
-                                    linkedHashMap.put("httpServletRequest", parameter.getName());
+                                    linkedHashMap.put("httpServletRequest", parameter);
                                     continue;
                                 }
                                 if(parameter.getType() == HttpServletResponse.class){
-                                    linkedHashMap.put("httpServletResponse", parameter.getName());
+                                    linkedHashMap.put("httpServletResponse", parameter);
                                     continue;
                                 }
                                 RequestParam queryParameter = parameter.getAnnotation(RequestParam.class);
                                 RequestBody body = parameter.getAnnotation(RequestBody.class);
+                                FormParams formParams = parameter.getAnnotation(FormParams.class);
+                                MultiPartFile multiPartFile = parameter.getAnnotation(MultiPartFile.class);
                                 if(body != null){
-                                    linkedHashMap.put("body",parameter.getName());
-                                }else {
-                                    linkedHashMap.put(queryParameter.value(),parameter.getName());
+                                    linkedHashMap.put("body",parameter);
+                                } else if(formParams != null){
+                                    linkedHashMap.put(formParams.value(), parameter);
+                                }else if(multiPartFile != null){
+                                    linkedHashMap.put(multiPartFile.value(), parameter);
+                                } else {
+                                    linkedHashMap.put(queryParameter.value(),parameter);
                                 }
                             }
                             requestMethodMapping.setLinkedHashMap(linkedHashMap);

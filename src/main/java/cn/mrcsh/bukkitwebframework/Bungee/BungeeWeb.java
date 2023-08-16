@@ -5,7 +5,7 @@ import cn.mrcsh.bukkitwebframework.Config.WebConfig;
 import cn.mrcsh.bukkitwebframework.Container.WebContainer;
 import cn.mrcsh.bukkitwebframework.Enum.HTTPType;
 import cn.mrcsh.bukkitwebframework.Module.RequestMethodMapping;
-import cn.mrcsh.bukkitwebframework.Servlet.ClassUtil;
+import cn.mrcsh.bukkitwebframework.Utils.ClassUtil;
 import cn.mrcsh.bukkitwebframework.Servlet.DispatcherServlet;
 import cn.mrcsh.bukkitwebframework.Bungee.Utils.ConfigYmlUtil;
 import cn.mrcsh.bukkitwebframework.Bungee.Utils.LogUtils;
@@ -26,11 +26,11 @@ public class BungeeWeb {
     public static void initialization(Class<? extends Plugin> clazz, Plugin plugin, boolean nolog) {
         LogUtils.noLog = nolog;
         LogUtils.plugin = plugin;
-        LogUtils.info("&6 ______     __  __     __  __     __  __     __     ______   __     __     ______     ______    ");
-        LogUtils.info("&6/\\  == \\   /\\ \\/\\ \\   /\\ \\/ /    /\\ \\/ /    /\\ \\   /\\__  _\\ /\\ \\  _ \\ \\   /\\  ___\\   /\\  == \\   ");
-        LogUtils.info("&6\\ \\  __<   \\ \\ \\_\\ \\  \\ \\  _\"-.  \\ \\  _\"-.  \\ \\ \\  \\/_/\\ \\/ \\ \\ \\/ \".\\ \\  \\ \\  __\\   \\ \\  __<   ");
-        LogUtils.info("&6 \\ \\_____\\  \\ \\_____\\  \\ \\_\\ \\_\\  \\ \\_\\ \\_\\  \\ \\_\\    \\ \\_\\  \\ \\__/\".~\\_\\  \\ \\_____\\  \\ \\_____\\");
-        LogUtils.info("&6  \\/_____/   \\/_____/   \\/_/\\/_/   \\/_/\\/_/   \\/_/     \\/_/   \\/_/   \\/_/   \\/_____/   \\/_____/");
+        LogUtils.info("&6  ______     __  __     __   __     ______     ______     ______     __     __     ______     ______");
+        LogUtils.info("&6 /\\  == \\   /\\ \\/\\ \\   /\\ \"-.\\ \\   /\\  ___\\   /\\  ___\\   /\\  ___\\   /\\ \\  _ \\ \\   /\\  ___\\   /\\  == \\");
+        LogUtils.info("&6 \\ \\  __<   \\ \\ \\_\\ \\  \\ \\ \\-.  \\  \\ \\ \\__ \\  \\ \\  __\\   \\ \\  __\\   \\ \\ \\/ \".\\ \\  \\ \\  __\\   \\ \\  __<");
+        LogUtils.info("&6  \\ \\_____\\  \\ \\_____\\  \\ \\_\\\\\"\\_\\  \\ \\_____\\  \\ \\_____\\  \\ \\_____\\  \\ \\__/\".~\\_\\  \\ \\_____\\  \\ \\_____\\");
+        LogUtils.info("&6   \\/_____/   \\/_____/   \\/_/ \\/_/   \\/_____/   \\/_____/   \\/_____/   \\/_/   \\/_/   \\/_____/   \\/_____/");
         // 加载配置文件
         loadConfig(plugin);
         // 映射请求路径
@@ -81,18 +81,18 @@ public class BungeeWeb {
                         requestMethodMapping.setName(annotation.value());
                         requestMethodMapping.setObj(ControllerClazz.getDeclaredConstructor().newInstance());
                         if(parameters.length > 0){
-                            LinkedHashMap<String, String> linkedHashMap = new LinkedHashMap<>();
+                            LinkedHashMap<String, Parameter> linkedHashMap = new LinkedHashMap<>();
                             for (Parameter parameter : parameters) {
                                 if(parameter.getType() == HttpServletRequest.class){
-                                    linkedHashMap.put("httpServletRequest", parameter.getName());
+                                    linkedHashMap.put("httpServletRequest", parameter);
                                     continue;
                                 }
                                 if(parameter.getType() == HttpServletResponse.class){
-                                    linkedHashMap.put("httpServletResponse", parameter.getName());
+                                    linkedHashMap.put("httpServletResponse", parameter);
                                     continue;
                                 }
                                 RequestParam param = parameter.getAnnotation(RequestParam.class);
-                                linkedHashMap.put(param.value(), parameter.getName());
+                                linkedHashMap.put(param.value(), parameter);
                             }
                             requestMethodMapping.setLinkedHashMap(linkedHashMap);
                         }
@@ -106,22 +106,28 @@ public class BungeeWeb {
                         requestMethodMapping.setObj(ControllerClazz.getDeclaredConstructor().newInstance());
                         Parameter[] parameters = method.getParameters();
                         if(parameters.length > 0){
-                            LinkedHashMap<String ,String> linkedHashMap = new LinkedHashMap<>();
+                            LinkedHashMap<String ,Parameter> linkedHashMap = new LinkedHashMap<>();
                             for (Parameter parameter : parameters) {
                                 if(parameter.getType() == HttpServletRequest.class){
-                                    linkedHashMap.put("httpServletRequest", parameter.getName());
+                                    linkedHashMap.put("httpServletRequest", parameter);
                                     continue;
                                 }
                                 if(parameter.getType() == HttpServletResponse.class){
-                                    linkedHashMap.put("httpServletResponse", parameter.getName());
+                                    linkedHashMap.put("httpServletResponse", parameter);
                                     continue;
                                 }
                                 RequestParam queryParameter = parameter.getAnnotation(RequestParam.class);
                                 RequestBody body = parameter.getAnnotation(RequestBody.class);
+                                FormParams formParams = parameter.getAnnotation(FormParams.class);
+                                MultiPartFile multiPartFile = parameter.getAnnotation(MultiPartFile.class);
                                 if(body != null){
-                                    linkedHashMap.put("body",parameter.getName());
-                                }else {
-                                    linkedHashMap.put(queryParameter.value(),parameter.getName());
+                                    linkedHashMap.put("body",parameter);
+                                } else if(formParams != null){
+                                    linkedHashMap.put(formParams.value(), parameter);
+                                }else if(multiPartFile != null){
+                                    linkedHashMap.put(multiPartFile.value(), parameter);
+                                } else {
+                                    linkedHashMap.put(queryParameter.value(),parameter);
                                 }
                             }
                             requestMethodMapping.setLinkedHashMap(linkedHashMap);
@@ -139,6 +145,8 @@ public class BungeeWeb {
                 }
             }
         }
+
+        System.out.println(WebConfig.mappingHashMap);
         LogUtils.info("&6initialization DispatcherServlet completed");
     }
 

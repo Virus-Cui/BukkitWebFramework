@@ -6,7 +6,7 @@
 
     <groupId>cn.mrcsh</groupId>
     <artifactId>BukkitWebFramework</artifactId>
-    <version>2.0-RELEASE</version>
+    <version>1.1-DEBUG</version>
     <packaging>jar</packaging>
 
     <name>BukkitWebFramework</name>
@@ -122,6 +122,18 @@
             <artifactId>lombok</artifactId>
             <version>RELEASE</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.13.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.5</version>
         </dependency>
 
 
