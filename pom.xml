@@ -6,7 +6,7 @@
 
     <groupId>cn.mrcsh</groupId>
     <artifactId>BukkitWebFramework</artifactId>
-    <version>1.1-DEBUG</version>
+    <version>1.1-RELEASE</version>
     <packaging>jar</packaging>
 
     <name>BukkitWebFramework</name>

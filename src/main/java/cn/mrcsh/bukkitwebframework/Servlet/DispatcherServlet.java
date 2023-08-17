@@ -2,7 +2,7 @@ package cn.mrcsh.bukkitwebframework.Servlet;
 
 
 import cn.mrcsh.bukkitwebframework.Annotation.CrossOrigin;
-import cn.mrcsh.bukkitwebframework.Annotation.FormParams;
+import cn.mrcsh.bukkitwebframework.Annotation.FormParam;
 import cn.mrcsh.bukkitwebframework.Annotation.MultiPartFile;
 import cn.mrcsh.bukkitwebframework.Config.WebConfig;
 import cn.mrcsh.bukkitwebframework.Enum.HTTPType;
@@ -143,7 +143,7 @@ public class DispatcherServlet extends HttpServlet {
                     break;
                 case POST:
                     // 从Request对象获取Form表单数据
-                    FormDataModule formDataModule = read2Form(request);
+                    FormDataModule formDataModule = read2From(request);
                     // 获取Query和Body参数
                     // Query参数
                     Map<String, String[]> queryParams = null;
@@ -178,8 +178,8 @@ public class DispatcherServlet extends HttpServlet {
                         }
                         if (queryParams != null && queryParams.containsKey(entry.getKey())) {
                             param[index] = queryParams.get(entry.getKey())[0];
-                        } else if (formDataModule != null && entry.getValue().getAnnotation(FormParams.class) != null) {
-                            FormParams formParam = entry.getValue().getAnnotation(FormParams.class);
+                        } else if (formDataModule != null && entry.getValue().getAnnotation(FormParam.class) != null) {
+                            FormParam formParam = entry.getValue().getAnnotation(FormParam.class);
                             param[index] = formDataModule.getSimpleParams().get(formParam.value());
                         } else if (formDataModule != null && entry.getValue().getAnnotation(MultiPartFile.class) != null) {
                             MultiPartFile file = entry.getValue().getAnnotation(MultiPartFile.class);
@@ -224,7 +224,7 @@ public class DispatcherServlet extends HttpServlet {
         }
     }
 
-    public FormDataModule read2Form(HttpServletRequest request) throws Exception {
+    public FormDataModule read2From(HttpServletRequest request) throws Exception {
         FormDataModule formDataModule = new FormDataModule();
         DiskFileItemFactory factory = new DiskFileItemFactory();
         ServletFileUpload upload = new ServletFileUpload(factory);

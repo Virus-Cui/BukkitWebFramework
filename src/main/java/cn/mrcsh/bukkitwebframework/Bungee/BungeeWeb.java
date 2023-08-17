@@ -118,12 +118,12 @@ public class BungeeWeb {
                                 }
                                 RequestParam queryParameter = parameter.getAnnotation(RequestParam.class);
                                 RequestBody body = parameter.getAnnotation(RequestBody.class);
-                                FormParams formParams = parameter.getAnnotation(FormParams.class);
+                                FormParam formParam = parameter.getAnnotation(FormParam.class);
                                 MultiPartFile multiPartFile = parameter.getAnnotation(MultiPartFile.class);
                                 if(body != null){
                                     linkedHashMap.put("body",parameter);
-                                } else if(formParams != null){
-                                    linkedHashMap.put(formParams.value(), parameter);
+                                } else if(formParam != null){
+                                    linkedHashMap.put(formParam.value(), parameter);
                                 }else if(multiPartFile != null){
                                     linkedHashMap.put(multiPartFile.value(), parameter);
                                 } else {
